@@ -1,6 +1,11 @@
 ﻿dotnet ef migrations add InitialIdentityServerPersistedGrantDbMigration -c PersistedGrantDbContext -o Data/Migrations/IdentityServer/PersistedGrantDb --project IdentityServer/IdentityServer
-
 dotnet ef migrations add InitialIdentityServerConfigurationDbMigration -c ConfigurationDbContext -o Data/Migrations/IdentityServer/ConfigurationDb --project IdentityServer/IdentityServer
+dotnet ef migrations add InitialAspNetIdentityMigration -c NetCoreIdentityDbContext -o Data/Migrations/IdentityServer/ConfigurationDb --project IdentityServer/IdentityServer
 
 dotnet-ef database update -c ConfigurationDbContext --project IdentityServer/IdentityServer
 dotnet-ef database update -c PersistedGrantDbContext --project IdentityServer/IdentityServer
+dotnet-ef database update -c NetCoreIdentityDbContext --project IdentityServer/IdentityServer
+
+
+#run identity server and seed data for the first time
+dotnet run IdentityServer/IdentityServer/bin/Debug/net6.0/IdentityServer /seed --project IdentityServer/IdentityServer

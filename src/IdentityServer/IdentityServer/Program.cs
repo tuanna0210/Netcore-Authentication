@@ -1,10 +1,35 @@
+using IdentityServer;
+using IdentityServer.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
+var seed = args.Contains("/seed");
+if (seed)
+{
+    //Remove seed argument
+    args = args.Except(new[] { "/seed" }).ToArray();
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
 var assembly = typeof(Program).Assembly.GetName().Name;
 var defaultConnString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (seed)
+{
+    SeedData.EnsureSeedData(defaultConnString);
+}
+
+builder.Services.AddDbContext<NetCoreIdentityDbContext>(options =>
+{
+    options.UseSqlServer(defaultConnString, opts => opts.MigrationsAssembly(assembly));
+});
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<NetCoreIdentityDbContext>();
+
 builder.Services.AddIdentityServer()
+    .AddAspNetIdentity<IdentityUser>()
     //Store used for configuration data such as clients, resources, and scopes
     .AddConfigurationStore(options =>
     {
